@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -6,46 +5,33 @@
 using namespace std;
 
 
-bool in_map(int key, unordered_map<int, int> hashMap);
-
-
 class Solution {
 
 public:
 
     vector<int> twoSum(vector<int>& nums, int target) {
-        vector<int> res = {0, 0};
-
-        int wantedNum;
-        int len = nums.size();
+        int num = 0, wantedNum = 0;
+        int n = nums.size();
         unordered_map<int, int> sumMap;
-        sumMap.reserve(len);
+        sumMap.reserve(n);
 
-        for (int num: nums){
-            wantedNum = target - num;
-            if (in_map(wantedNum, sumMap) || in_map(num, sumMap)) {
-                res[0] = wantedNum; res[1] = num;
-                break;
-            } else {
-                sumMap[wantedNum] = num;
-                sumMap[num] = wantedNum;
+        for (int i = 0; i < n; ++i) {
+            num = nums[i];
+            if (sumMap.find(num) != sumMap.end()) {
+                return {sumMap[num], i};
             }
+            wantedNum = target - num;
+            sumMap.emplace(wantedNum, i);
         }
-
-        return res;
     }
 };
 
 
-bool in_map(int key, unordered_map<int, int> hashMap) {
-    auto found = hashMap.find(key);
-    return (found != hashMap.end());
-}
-
 void print_vector(vector<int> vect) {
     for (int x : vect) {
-        cout << x << endl;
+        cout << x << ' ';
     }
+    cout << '\n';
 }
 
 
@@ -53,10 +39,9 @@ int main() {
     Solution sol = Solution();
 
     // test the solution
-    vector<int> nums1 = {3, 4, 8, 23, 12};
-    int target1 = 15;
-
-    print_vector(sol.twoSum(nums1, target1));
+    vector<int> nums = {1, 6, 7, 18, 20, 23};
+    int target = 13;
+    print_vector(sol.twoSum(nums, target));
 
     return 0;
 }
