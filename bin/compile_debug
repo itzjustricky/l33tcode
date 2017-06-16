@@ -1,0 +1,8 @@
+#!/bin/bash
+# Compile Execute Delete
+
+sourceName=$1
+baseName=$( echo "${sourceName%.*}" )
+
+g++ -g $sourceName -o $baseName -std=c++11
+gdb $baseName
