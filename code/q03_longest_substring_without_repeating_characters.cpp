@@ -23,9 +23,7 @@ public:
 
     void updateMap(string subString) {
         int n = subString.size();
-
         for (int i = 0; i < n; ++i) {
-            cout << "deleting " << subString[i] << endl;
             this->tracker.erase(subString[i]);
         }
     }
@@ -46,7 +44,6 @@ public:
 
     int lengthOfLongestSubstring(string s) {
         int n = s.size();
-        cout << "==============================" << endl;
 
         CharacterTracker charTracker(26);
 
@@ -61,24 +58,17 @@ public:
 
             // if character in map update character tracker and substring
             if (charTracker.contains(charIter)) {
-                cout << "Encountered duplicate via " << charIter << endl;
-                cout << "Currently substring is " << subString << endl << endl;
-
                 lengthTmp = subString.size();
                 if (lengthTmp > bestLength) bestLength = lengthTmp;
 
                 startToDuplicateLength = charTracker[charIter] - subStringStart;
-                cout << "From start to duplicate length " << startToDuplicateLength << endl;
-                cout << "Character location " << charTracker[charIter] << endl;
-                subStringStart = charTracker[charIter];
+                subStringStart = charTracker[charIter] + 1;
                 // delete all characters in map from start to duplicate character
                 charTracker.updateMap(subString.substr(0, startToDuplicateLength + 1));
                 subString = subString.substr(startToDuplicateLength + 1, subString.size());
-                cout << "==============================" << endl;
             }
             subString += charIter;
             charTracker[charIter] = i;
-            // longestSubstring += charIter;
         }
 
         return bestLength;
