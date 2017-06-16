@@ -47,22 +47,24 @@ public:
 
         CharacterTracker charTracker(26);
 
-        int bestLength = 0, lengthTmp;
-        int startToDuplicateLength = 0;
-        int subStringStart = 0;  // starting index of longest substring
         string subString = "";
+        int bestLength = 0,                 // to return: length of longest substring
+            startToDuplicateLength = 0,     // measures indices b/w substr. start and duplicate
+            subStringStart = 0,             // starting index of longest substring
+            lengthTmp = 0;                  // to store length of substring when duplicate encountered
 
         char charIter;
         for (int i = 0; i < n; ++i) {
             charIter = s[i];
 
-            // if character in map update character tracker and substring
+            // if duplicate encountered update variables
             if (charTracker.contains(charIter)) {
                 lengthTmp = subString.size();
                 if (lengthTmp > bestLength) bestLength = lengthTmp;
 
                 startToDuplicateLength = charTracker[charIter] - subStringStart;
                 subStringStart = charTracker[charIter] + 1;
+
                 // delete all characters in map from start to duplicate character
                 charTracker.updateMap(subString.substr(0, startToDuplicateLength + 1));
                 subString = subString.substr(startToDuplicateLength + 1, subString.size());
