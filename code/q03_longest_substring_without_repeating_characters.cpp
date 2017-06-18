@@ -44,9 +44,10 @@ public:
 
     int lengthOfLongestSubstring(string s) {
         int n = s.size();
+        if (n == 0) return 0;
+        if (n == 1) return 1;
 
         CharacterTracker charTracker(26);
-
         string subString = "";
         int bestLength = 0,                 // to return: length of longest substring
             startToDuplicateLength = 0,     // measures indices b/w substr. start and duplicate
@@ -73,7 +74,8 @@ public:
             charTracker[charIter] = i;
         }
 
-        return bestLength;
+        lengthTmp = subString.size();
+        return (bestLength > lengthTmp) ? bestLength : lengthTmp;
     }
 };
 
