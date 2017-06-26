@@ -29,21 +29,8 @@ void printLinkedList(ListNode* rootNode);
 
 class Solution {
 public:
-    int addTwoDigits(ListNode* l1, ListNode* l2) {
-        int digit1, digit2;
-
-        digit1 = (l1 == nullptr) ? 0 : l1->val;
-        digit2 = (l2 == nullptr) ? 0 : l2->val;
-        return digit1 + digit2;
-    }
-
-    ListNode* moveIterForward(ListNode* nodePtr) {
-        if (nodePtr == nullptr) {
-            return nodePtr;
-        } else {
-            return nodePtr->next;
-        }
-    }
+    int addTwoDigits(ListNode* l1, ListNode* l2);
+    ListNode* moveIterForward(ListNode* nodePtr);
 
     // assumes list only carries digits (i.e. numbers less than 10)
     ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
@@ -73,6 +60,24 @@ public:
     }
 
 };
+
+
+int Solution::addTwoDigits(ListNode* l1, ListNode* l2) {
+    int digit1, digit2;
+
+    digit1 = (l1 == nullptr) ? 0 : l1->val;
+    digit2 = (l2 == nullptr) ? 0 : l2->val;
+    return digit1 + digit2;
+}
+
+
+ListNode* Solution::moveIterForward(ListNode* nodePtr) {
+    if (nodePtr == nullptr) {
+        return nodePtr;
+    } else {
+        return nodePtr->next;
+    }
+}
 
 
 ListNode* vectorToLinkedList(const vector<int>& vect) {
