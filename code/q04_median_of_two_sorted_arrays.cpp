@@ -26,34 +26,38 @@ public:
     double findKthLargest(vector<int>& nums1, vector<int>& nums2, int k) {
         int n = nums1.size(), m = nums2.size();
         int total = n + m;
-        int n_mid = n / 2;
-        int m_mid = m / 2;
-        int num1 = nums1[n_mid], num2 = nums2[m_mid];
 
-        // if n ==
-        if (total == 1) {
-            return n > m ? nums1[0] : nums2[0];
-        }
+        // return findKthLargest(nums1, nums2, k);
+        return 0.0;
+    }
 
-        if (k == (total / 2)) {
-            // something
-            // if (
-        } else if (k < (total / 2)) {
-            if (num1 <= num2) {
-                nums2 = subset_vector(0, m/2 - 1, nums2);
-            } else {
-                nums1 = subset_vector(0, n/2 - 1, nums1);
-            }
-        } else {  // k > (total / 2)
-            // TODO
-            if (num1 <= num2) {
-                nums2 = subset_vector(0, m/2 - 1, nums2);
-            } else {
-                nums1 = subset_vector(0, n/2 - 1, nums1);
-            }
-        }
 
-        return findKthLargest(nums1, nums2, k);
+    // handle base case when the smaller vector is of length 1
+    vector<int> handleBaseCase(vector<int>& nums1, vector<int>& nums2) {
+
+    }
+
+
+    // utility used for update vector
+    // not sure if this should be function signature
+    vector<int> updateVector(vector<int>& nums, bool midIsLarger, int k) {
+        int n = nums.size();
+        int midIndex = getMidElement(nums);
+    }
+
+
+    // The middle element is n/2 when vector is even
+    //                       n/2+1 when vector is odd
+    // where n is the size of the vector
+    int getMidElement(vector<int>& nums) {
+        int n = nums.size();
+        return ((n%2) == 0) ?  n/2 : n/2+1;
+    }
+
+
+    // order the vectors so that the smaller one is first
+    void orderVectors() {
+
     }
 
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
