@@ -1,7 +1,8 @@
 /*
  * Description:
  *
- *
+ * TODO:
+ *      - algorithm is not calculating all the substring combinations
  *
  * @author: Ricky Chang
 */
@@ -26,6 +27,7 @@ public:
 
     typedef pair<int, int> int_pair;
     typedef unordered_map<int_pair, int, int_pair_hash> pair2int_map;
+    typedef unordered_map<int_pair, bool, int_pair_hash> pair2bool_map;
 
     bool pairInMap(const int_pair& section, pair2int_map& tracker) {
         auto got = tracker.find(section);
@@ -33,85 +35,57 @@ public:
     }
 
     int calcLongestPalindrome(string s, const int_pair& section, int_pair& longestSoFar,
-                              pair2int_map& longestTracker, bool& successFlag) {
+                              pair2int_map& longestTracker, pair2bool_map& palindromeTracker) {
         // return cached value
         if (pairInMap(section, longestTracker)) { return longestTracker[section]; }
 
         int start = section.first,
             end = section.second;
-        int start_to_end = end - start;
-        int tmpLongest1 = 0, tmpLongest2 = 0;
+        int startToEnd = end - start;
+        int longestSoFarLength;
 
-        if (start_to_end == 0) {
-            longestTracker[section] = 1;
-        } else if ((start_to_end == 1) &&
-                   (s[start] == s[end])) {
+        if ((startToEnd == 1) && (s[start] == s[end])) {
             longestTracker[section] = 2;
+            palindromeTracker[section] = true;
         } else {
+
             if (s[start] == s[end]) {
-                successFlag = true;
                 int_pair newSection = make_pair(start+1, end-1);
                 longestTracker[section] = \
-                    calcLongestPalindrome(s, newSection, longestSoFar, longestTracker, successFlag);
-                longestTracker[section] += successFlag * 2;
-                /*
-                if ((start_to_end+1) < longestTracker[section]) {
-                    cout << "length is violated here: " << endl;
-                    cout << "carry: " << carry << endl;
-                    cout << "ind: " << start << "-" << end << endl;
-                    cout << "substring: " << s.substr(start, start_to_end+1) << endl;
-                    cout << "------------------------------" << endl;
-                }
-                */
+                    calcLongestPalindrome(s, newSection, longestSoFar, longestTracker, palindromeTracker);
 
+                if (palindromeTracker[newSection]) {
+                    longestTracker[section] += 2;
+                    palindromeTracker[section] = true;
+                } else {
+                    palindromeTracker[section] = false;
+
+                    const int_pair& newSection1 = make_pair(start+1, end),
+                                    newSection2 = make_pair(start, end-1);
+                    longestTracker[section] = max(
+                        calcLongestPalindrome(s, newSection1, longestSoFar, longestTracker, palindromeTracker),
+                        calcLongestPalindrome(s, newSection2, longestSoFar, longestTracker, palindromeTracker));
+
+                }
+
+                // the section below could hit cache ... which then may lead it to falsely
+                // believe all the ones below are also palindromes
+                // longestTracker[section] += isPalindrome * 2;
             } else {
-                successFlag = false;
+                palindromeTracker[section] = false;
 
                 const int_pair& newSection1 = make_pair(start+1, end),
                                 newSection2 = make_pair(start, end-1);
-                tmpLongest1 = calcLongestPalindrome(s, newSection1, longestSoFar, longestTracker, successFlag);
-                tmpLongest2 = calcLongestPalindrome(s, newSection2, longestSoFar, longestTracker, successFlag);
-                longestTracker[section] = max(tmpLongest1, tmpLongest2);
+                longestTracker[section] = max(
+                    calcLongestPalindrome(s, newSection1, longestSoFar, longestTracker, palindromeTracker),
+                    calcLongestPalindrome(s, newSection2, longestSoFar, longestTracker, palindromeTracker));
             }
         }
 
-        // if ((start == 20) && (end == 27)) {
-        //     cout << "******************************" << endl;
-        //     cout << "The length for 20-27 is " << longestTracker[section] << endl;
-        //     cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
-        //     cout << "******************************" << endl;
-        // }
-
-        if ((start == 21) && (end == 26)) {
-            cout << "******************************" << endl;
-            cout << "The length for 21-26 is " << longestTracker[section] << endl;
-            cout << "The current longest so far is " << longestTracker[longestSoFar] << endl;
-            cout << "******************************" << endl;
-        }
-
-        if ((start == 20) && (end == 26)) {
-            cout << "******************************" << endl;
-            cout << "The length for 20-26 is " << longestTracker[section] << endl;
-            cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
-            cout << "******************************" << endl;
-        }
-        if ((start == 21) && (end == 27)) {
-            cout << "******************************" << endl;
-            cout << "The length for 21-27 is " << longestTracker[section] << endl;
-            cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
-            cout << "******************************" << endl;
-        }
+        longestSoFarLength = longestSoFar.second - longestSoFar.first;
 
         if (longestTracker[section] > longestTracker[longestSoFar]) {
             longestSoFar = section;
-
-            cout << "------------------------------" << endl;
-            cout << "with indices " << longestSoFar.first << "-" << longestSoFar.second << endl;
-            cout << "The substring " << s.substr(longestSoFar.first, start_to_end+1) \
-                 << " is now the longest substring with length " << longestTracker[section] << endl;
-            cout << "Substring actually has length " \
-                 << s.substr(longestSoFar.first, start_to_end+1).length() << endl;
-            cout << "success flag is " << successFlag << endl;
         }
 
         return longestTracker[section];
@@ -122,17 +96,24 @@ public:
         if (n == 0) {
             return 0;
         }
-        // longestTracker tracks longest palindrome of substrs of string s
         // mapping of (start index, end index) => length
-        bool successFlag = false;
+        // tracks longest palindrome of substrs of string s
         pair2int_map longestTracker;
+        // tracks which substrings are actually palindromes
+        pair2bool_map palindromeTracker;
+
+        // start by initializing every character in string into longestTracker
+        for (int i = 0; i < int(n); ++i) {
+            longestTracker[make_pair(i, i)] = 1;
+        }
+
+        palindromeTracker.reserve(n * n);
         longestTracker.reserve(n * n);
 
         int_pair wholeSection = make_pair(0, n-1);
-        int_pair longestSoFar = make_pair(0, -1);
-        longestTracker[longestSoFar] = 0;
+        int_pair longestSoFar = make_pair(0, 0);
         // longestTracker
-        calcLongestPalindrome(s, wholeSection, longestSoFar, longestTracker, successFlag);
+        calcLongestPalindrome(s, wholeSection, longestSoFar, longestTracker, palindromeTracker);
 
         int substrLength = longestSoFar.second - longestSoFar.first;
         return s.substr(longestSoFar.first, substrLength+1);
@@ -143,10 +124,13 @@ public:
 
 int main() {
     Solution sol;
-    string s = "afblalbacbdefaaaaaaaabbbbbbaaaaaaaaaa";
-    string correctAnswer = "aaaaaaaabbbbbbaaaaaaaa";
+    string s = "afblalbacbdefaaabbbbaaaaa";
+    string correctAnswer = "aaabbbbaaa";
+    // string s = "bcxbaaabyz";
+    // string correctAnswer = "baaab";
+
     string longestPalindrome = sol.longestPalindrome(s);
-    cout << "The longest length is: " << longestPalindrome << endl;
+    cout << "The calculated answer is: " << longestPalindrome << endl;
     cout << "The correct answer is: " << correctAnswer << endl;
 
     return 0;
