@@ -4,6 +4,7 @@
  * @author: Ricky Chang
  */
 
+#include <climits>
 #include <iostream>
 #include <unordered_map>
 
@@ -31,8 +32,7 @@ public:
     }
 
     int myAtoi(string str) {
-        size_t n = str.length(),
-               i = findFirstNonWhiteSpace(str),
+        size_t i = findFirstNonWhiteSpace(str),
                res = 0;
 
         // keep track of sign

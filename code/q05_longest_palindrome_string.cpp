@@ -21,7 +21,6 @@ struct int_pair_hash {
 };
 
 
-// TODO fix to return a string instead of length ...
 class Solution {
 public:
 
@@ -76,15 +75,29 @@ public:
             }
         }
 
-        if ((start == 20) && (end == 27)) {
-            cout << "******************************" << endl;
-            cout << "The length for 20-27 is " << longestTracker[section] << endl;
-            cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
-            cout << "******************************" << endl;
-        }
+        // if ((start == 20) && (end == 27)) {
+        //     cout << "******************************" << endl;
+        //     cout << "The length for 20-27 is " << longestTracker[section] << endl;
+        //     cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
+        //     cout << "******************************" << endl;
+        // }
+
         if ((start == 21) && (end == 26)) {
             cout << "******************************" << endl;
             cout << "The length for 21-26 is " << longestTracker[section] << endl;
+            cout << "The current longest so far is " << longestTracker[longestSoFar] << endl;
+            cout << "******************************" << endl;
+        }
+
+        if ((start == 20) && (end == 26)) {
+            cout << "******************************" << endl;
+            cout << "The length for 20-26 is " << longestTracker[section] << endl;
+            cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
+            cout << "******************************" << endl;
+        }
+        if ((start == 21) && (end == 27)) {
+            cout << "******************************" << endl;
+            cout << "The length for 21-27 is " << longestTracker[section] << endl;
             cout << "THe current longest so far is " << longestTracker[longestSoFar] << endl;
             cout << "******************************" << endl;
         }
