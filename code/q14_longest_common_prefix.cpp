@@ -22,7 +22,6 @@ public:
         for (size_t i = 1; i < n; ++i) {
             minLength = min(minLength, strs[i].length());
         }
-
         return minLength;
     }
 

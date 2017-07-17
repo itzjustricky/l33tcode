@@ -99,12 +99,12 @@ TreeNode* constructTree() {
     return node;
 }
 
-void printInOrder(TreeNode* root) {
+void printPreOrder(TreeNode* root) {
 
     if (root != NULL) {
         cout << root->val << " ";
-        printInOrder(root->left);
-        printInOrder(root->right);
+        printPreOrder(root->left);
+        printPreOrder(root->right);
     }
 }
 
@@ -121,7 +121,7 @@ void printFlattenedTree(TreeNode* root) {
 
 int main() {
     TreeNode* testTree = constructTree();
-    printInOrder(testTree);
+    printPreOrder(testTree);
     cout << "\n";
 
     Solution sol;
