@@ -40,6 +40,16 @@ public:
         return find(v.begin(), v.end(), x) != v.end();
     }
 
+    void updateModeWithValue(int rootVal, mode_count& leftSubTree) {
+        if (leftSubTree.first == 1) {
+            leftSubTree.second.emplace_back(rootVal);
+        } else if (isInVector(rootVal, leftSubTree.second)) {
+            leftSubTree.first += 1;
+            leftSubTree.second = vector<int>(rootVal);
+        }
+
+    }
+
     vector<int> combineVectors(const vector<int>& v1, const vector<int>& v2) {
         vector<int> newVector(v1.size() + v2.size());
         newVector.insert(newVector.end(), v1.begin(), v1.end());
@@ -77,6 +87,8 @@ public:
             }
         } else {
             // TODO: need to handle the root value too
+            updateModeWithValue(root->val, leftSubTree);
+
             if (leftSubTree.first > rightSubTree.first) {
                 return leftSubTree;
             } else if (leftSubTree.first < rightSubTree.first) {
@@ -86,8 +98,6 @@ public:
                                  combineVectors(leftSubTree.second, rightSubTree.second));
             }
         }
-
-        // if leftSubTree.first
 
     }
 
