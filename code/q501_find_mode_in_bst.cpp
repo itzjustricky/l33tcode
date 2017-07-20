@@ -13,12 +13,11 @@
 
 #include <vector>
 #include <utility>
-#include <algorithm>
+// #include <algorithm>
 
 using namespace std;
 
-
-void printVector(const vector<int>& v) {
+void printVector(vector<int> v) {
     for (auto x : v) {
         cout << x << " ";
     }
@@ -37,86 +36,57 @@ struct TreeNode {
 class Solution {
 public:
 
-    // first stores count, second stores numbers with that count
-    typedef pair<int, vector<int>> mode_pair;
+    int mLargestModeCount = 0;
 
-    bool isLeaf(TreeNode* node) {
-        return ((node->left == NULL) && (node->right == NULL));
-    }
-
-    bool isInVector(int x, const vector<int>& v) {
-        return find(v.begin(), v.end(), x) != v.end();
-    }
-
-    void updateMode(int rootVal, mode_pair& leftSubTree) {
-        if (isInVector(rootVal, leftSubTree.second)) {
-            leftSubTree.first += 1;
-            leftSubTree.second = vector<int>(1, rootVal);
-        } else if (leftSubTree.first == 0) {
-            leftSubTree.first = 1;
-            leftSubTree.second = vector<int>(1, rootVal);
-        } else if (leftSubTree.first == 1) {
-            leftSubTree.second.push_back(rootVal);
+    void updateStacks(vector<int>& modeStack, vector<int>& countStack) {
+        if (countStack.back() < mLargestModeCount) {
+            countStack.pop_back();
+            modeStack.pop_back();
+        } else if (countStack.back() > mLargestModeCount) {
+            mLargestModeCount = countStack.back();
+            // erase all but last if value on top has highest count
+            countStack.erase(countStack.begin(), countStack.end()-1);
+            modeStack.erase(modeStack.begin(), modeStack.end()-1);
         }
     }
 
-    vector<int> combineVectors(const vector<int>& v1, const vector<int>& v2) {
-        vector<int> newVector;
-        newVector.insert(newVector.end(), v1.begin(), v1.end());
-        newVector.insert(newVector.end(), v2.begin(), v2.end());
-        return newVector;
-    }
+    void updateMode(int newVal, vector<int>& modeStack, vector<int>& countStack) {
 
-    mode_pair intersectModes(const mode_pair& left_modes, const mode_pair& right_modes) {
-        vector<int> modeIntersect;
-        for (auto x : left_modes.second) {
-            if (isInVector(x, right_modes.second)) {
-                modeIntersect.push_back(x);
-            }
-        }
-
-        if (modeIntersect.size() > 0) {
-            return make_pair(left_modes.first + right_modes.first, modeIntersect);
+        if (modeStack.empty()) {    // first time updateMode is called
+            modeStack.emplace_back(newVal);
+            countStack.emplace_back(1);
+        } else if (modeStack.back() == newVal) {
+            ++countStack.back();
         } else {
-            return make_pair(0, modeIntersect);
+            updateStacks(modeStack, countStack);
+            modeStack.emplace_back(newVal);
+            countStack.emplace_back(1);
         }
+
     }
 
-    mode_pair recursiveFindMode(TreeNode* root) {
-        if (root == NULL) {
-            return make_pair(0, vector<int>());
+    void inorderHelper(TreeNode* node, vector<int>& modeStack, vector<int>& countStack) {
+        if (node != NULL) {
+            inorderHelper(node->left, modeStack, countStack);
+            updateMode(node->val, modeStack, countStack);
+            inorderHelper(node->right, modeStack, countStack);
         }
-        if (isLeaf(root)) {
-            return make_pair(1, vector<int>(1, root->val));
-        }
-
-        vector<int> mergedModes;
-
-        mode_pair leftSubTree = recursiveFindMode(root->left);
-        mode_pair rightSubTree = recursiveFindMode(root->right);
-        // here I count the root as part of the left sub-tree
-        updateMode(root->val, leftSubTree);
-
-        mode_pair subTreeIntersect = intersectModes(leftSubTree, rightSubTree);
-        if (subTreeIntersect.first > 0) {
-            return subTreeIntersect;
-
-        } else {
-            if (leftSubTree.first > rightSubTree.first) {
-                return leftSubTree;
-            } else if (leftSubTree.first < rightSubTree.first) {
-                return rightSubTree;
-            } else {    // mode count of left and right are the same
-                mergedModes = combineVectors(leftSubTree.second, rightSubTree.second);
-                return make_pair(leftSubTree.first, mergedModes);
-            }
-        }
-
     }
 
     vector<int> findMode(TreeNode* root) {
-        mode_pair treeModes = recursiveFindMode(root);
-        return treeModes.second;
+        if (root == NULL) {
+            return vector<int>();
+        }
+
+        mLargestModeCount = 0;
+        vector<int> modeStack;
+        vector<int> countStack;
+
+        inorderHelper(root, modeStack, countStack);
+        // update one last time for most recent insert
+        updateStacks(modeStack, countStack);
+
+        return modeStack;
     }
 };
 
@@ -124,7 +94,7 @@ public:
 TreeNode* constructTree() {
     TreeNode* root = new TreeNode(1);
     root->right = new TreeNode(2);
-    // root->right->left = new TreeNode(2);
+    root->right->left = new TreeNode(2);
 
     return root;
 }
