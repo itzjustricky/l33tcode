@@ -13,77 +13,102 @@
 using namespace std;
 
 
+struct vector_hash {
+    static const hash<vector<bool>> hasher;
+
+    size_t operator() (const vector<int>& v) const {
+        static vector<bool> boolVector(1000, false);
+        fill(boolVector.begin(), boolVector.end(), false);  // reset all to false
+        for (int x : v) {
+            boolVector[x] = true;
+        }
+        return hasher(boolVector);
+    }
+};
+
 class Solution {
 
 private:
 
-    hash<vector<bool>> vectorHash;
+    typedef unordered_map<vector<int>, int, vector_hash> chain2int_map;
+    static const int INT_INF = numeric_limits<int>::infinity();
+
+    int m_TotalPairCount;
+    chain2int_map m_ChainHash;
     vector<vector<int>>* m_Pairs;
 
-    vector<int> findReplacePairs(int pairIndex, const vector<int>& pairChain) {
-        vector<int> replacePairs;
-        vector<int> pair = (*m_Pairs)[pairIndex], pairTmp;
+    vector<int> replacePairs(int start, int end, int replacementPair, const vector<int>& pairChain) {
+        vector<int> newChain = pairChain;
+        newChain.erase(newChain.begin() + start, newChain.begin() + end);
+        newChain.insert(newChain.begin() + start, replacementPair);
+        return newChain;
+    }
 
-        for (auto pairIter: pairChain) {
-            pairTmp = (*m_Pairs)[pairIter];
-            if (pairTmp[1] < pair[1]) {
+    int findLargestSmallerPair(const vector<int>& pair, const vector<int>& pairChain, int startIndex=0) {
+        int n = pairChain.size(), i = startIndex;
+        vector<int> pairIter = {-INT_INF, -INT_INF};
+        if (i != 0) { pairIter = (*m_Pairs)[pairChain[i]]; }
 
+        // assumes all pairs before startIndex are smaller
+        while (pair[0] > pairIter[1]) {
+            ++i; if (i == n) { break; }
+            pairIter = (*m_Pairs)[pairChain[i]];
+        }
+        return i-1;
+    }
+
+
+    int findSmallestLargerPair(const vector<int>& pair, const vector<int>& pairChain, int startIndex=0) {
+        int n = pairChain.size(), i = startIndex;
+        vector<int> pairIter = {-INT_INF, -INT_INF};
+        if (i != 0) { pairIter = (*m_Pairs)[pairChain[i]]; }
+
+        // assumes all pairs before startIndex are smaller
+        while (pair[1] < pairIter[0]) {
+            ++i; if (i == n) { break; }
+            pairIter = (*m_Pairs)[pairChain[i]];
+        }
+        return i-1;
+    }
+
+    bool canInsert(int insertIndex, const vector<int>& pair, const vector<int>& pairChain) {
+        static vector<int> frontPair, backPair;
+        frontPair = (*m_Pairs)[pairChain[insertIndex]];
+        backPair = (*m_Pairs)[pairChain[insertIndex+1]];
+        return ((pair[0] > frontPair[1]) && (pair[1] < backPair[0]));
+    }
+
+    int _findLongestChain(int startIndex, vector<int> pairChain) {
+        vector<int> pairIter, newPair;
+        int longestChain = 0,
+            largestSmallerPair = 0,
+            smallestLargerPair = 0;
+
+        for (int i = startIndex; i < m_TotalPairCount; ++i) {
+            pairIter = (*m_Pairs)[i];
+            largestSmallerPair = findLargestSmallerPair(pairIter, pairChain);
+
+            if (canInsert(largestSmallerPair, pairIter, pairChain)) {
+                ++longestChain;
+                pairChain.insert(pairChain.begin() + largestSmallerPair, i);
+            } else {
+                smallestLargerPair = findSmallestLargerPair(pairIter, pairChain, largestSmallerPair);
+                newPair = replacePairs(largestSmallerPair, smallestLargerPair, i, pairChain);
+                return max(_findLongestChain(i, pairChain), _findLongestChain(i, newPair));
             }
-
-            // (*m_Pairs)[pairIter]
-            // replacePairs.append();
         }
 
+        return longestChain;
     }
 
 
 public:
 
-    static const int INT_INF = numeric_limits<int>::infinity();
-
-    int findInsertionPoint(int pairIndex, const vector<int>& pairChain) {
-        int i = 0, n = pairChain.size();
-        vector<int> frontPair = {-INT_INF, -INT_INF},
-                    backPair = (*m_Pairs)[0];
-        vector<int> pair = (*m_Pairs)[pairIndex];
-        do {
-            if ((frontPair[1] < pair[0]) && (pair[1] < backPair[0])) {
-                return i;
-            }
-            ++i;
-            frontPair = (*m_Pairs)[pairChain[i-1]];
-            backPair = (*m_Pairs)[pairChain[i]];
-        } while (i < n);
-
-        return (backPair[1] < pair[0]) ? n : -1;
-    }
-
-
-    int _findLongestChain(int start, vector<int> pairChain) {
-
-    }
-
-
     int findLongestChain(vector<vector<int>>& pairs) {
         m_Pairs = &pairs;
+        m_TotalPairCount = pairs.size();
 
-        vector<int> pairChain;
-        // pairChainKey will be used as key to hash map
-        // since each pair can only be used once
-        vector<bool> pairChainKey(1000, false);
-        // unordered_map<int, vector<int>> chainHash;
-        // chainHash.reserve(pairs.size());
-
-        for (auto pair: pairs) {
-
-        }
-
+        vector<int> pairChain(m_TotalPairCount);
+        return _findLongestChain(0, pairChain);
     }
 };
-
-
-int main() {
-
-
-    return 0;
-}
