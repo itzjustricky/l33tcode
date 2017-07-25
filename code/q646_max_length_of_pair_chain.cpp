@@ -20,24 +20,20 @@ private:
     hash<vector<bool>> vectorHash;
     vector<vector<int>>* m_Pairs;
 
-    vector<int> findReplacePairs(int pairIndex, int location, const vector<int>& pairChain) {
+    vector<int> findReplacePairs(int pairIndex, const vector<int>& pairChain) {
         vector<int> replacePairs;
-        size_t i = location;
-        vector<int> pair = (*m_Pairs)[pairIndex];
+        vector<int> pair = (*m_Pairs)[pairIndex], pairTmp;
 
-        while (pair) {
+        for (auto pairIter: pairChain) {
+            pairTmp = (*m_Pairs)[pairIter];
+            if (pairTmp[1] < pair[1]) {
 
+            }
+
+            // (*m_Pairs)[pairIter]
+            // replacePairs.append();
         }
 
-        // for (int i = location; i < )
-
-
-        return ;
-    }
-
-    bool canInsert(int pairIndex, int location, const vector<int>& pairChain) {
-
-        return true;
     }
 
 
@@ -45,13 +41,13 @@ public:
 
     static const int INT_INF = numeric_limits<int>::infinity();
 
-    int findInsertionOrReplacePoint(int pairIndex, const vector<int>& pairChain) {
+    int findInsertionPoint(int pairIndex, const vector<int>& pairChain) {
         int i = 0, n = pairChain.size();
         vector<int> frontPair = {-INT_INF, -INT_INF},
                     backPair = (*m_Pairs)[0];
         vector<int> pair = (*m_Pairs)[pairIndex];
         do {
-            if ((frontPair[1] <= pair[0]) && (pair[1] <= backPair[0])) {
+            if ((frontPair[1] < pair[0]) && (pair[1] < backPair[0])) {
                 return i;
             }
             ++i;
