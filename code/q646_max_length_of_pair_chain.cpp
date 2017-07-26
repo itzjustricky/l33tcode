@@ -79,7 +79,7 @@ private:
     }
 
     int _findLongestChain(int startIndex, vector<int> pairChain) {
-        vector<int> pairIter, newPair;
+        vector<int> pairIter, newChain;
         int longestChain = 0,
             largestSmallerPair = 0,
             smallestLargerPair = 0;
@@ -93,8 +93,10 @@ private:
                 pairChain.insert(pairChain.begin() + largestSmallerPair, i);
             } else {
                 smallestLargerPair = findSmallestLargerPair(pairIter, pairChain, largestSmallerPair);
-                newPair = replacePairs(largestSmallerPair, smallestLargerPair, i, pairChain);
-                return max(_findLongestChain(i, pairChain), _findLongestChain(i, newPair));
+                newChain = replacePairs(largestSmallerPair, smallestLargerPair, i, pairChain);
+                // explore two different chain options
+                longestChain += max(_findLongestChain(i+1, pairChain),
+                                    _findLongestChain(i+1, newChain));
             }
         }
 
@@ -112,3 +114,18 @@ public:
         return _findLongestChain(0, pairChain);
     }
 };
+
+
+int main() {
+
+    vector<vector<int>> pairs = {
+        {1, 2}, {4, 5}, {8, 9},
+        {-1, 0}, {10, 12}, {3, 10},
+    };
+
+    Solution sol;
+    cout << "The longest chain is " << sol.findLongestChain(pairs) << endl;
+
+
+    return 0;
+}
