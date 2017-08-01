@@ -1,0 +1,10 @@
+#!/bin/bash
+# Compile Execute Delete
+
+sourceName=$1
+baseName=$( echo "${sourceName%.*}" )
+
+g++ -Wall -pg $sourceName -o $baseName -std=c++11
+gprof $baseName gmon.out > analysis.txt
+# ./$baseName
+rm $baseName
