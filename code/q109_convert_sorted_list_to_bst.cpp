@@ -32,35 +32,39 @@ class Solution {
 
 private:
 
-    ListNode* getMidPoint(ListNode* node) {
-        if (node == NULL) { return NULL; }
-
+    ListNode* getBeforeMidPoint(ListNode* node) {
         ListNode* slowPtr = node;
         ListNode* fastPtr = node;
 
-        while (fastPtr->next != NULL) {
-            slowPtr = slowPtr->next;
+        while (true) {
             fastPtr = fastPtr->next->next;
-            if (fastPtr == NULL) { break; }
+            if ((fastPtr == NULL) ||
+                (fastPtr->next == NULL)) {
+                break;
+            }
+            slowPtr = slowPtr->next;
         }
 
-        cout << "passed node is " << node->val << endl;
-        cout << "mid-point is " << slowPtr->val << endl;
         return slowPtr;
     }
 
     TreeNode* splitList(ListNode* node) {
-        if (node == NULL) { return NULL; }
-        ListNode* midNode = getMidPoint(node);
+        ListNode* beforeMidNode;
+        TreeNode* rootNode;
 
-        TreeNode* rootNode = new TreeNode(midNode->val);
-        if (midNode == node) { return rootNode; }
+        if (node == NULL) {
+            return NULL;
+        } else if (node->next == NULL) {
+            rootNode = new TreeNode(node->val);
+            return rootNode;
+        }
 
-        cout << "setting right child" << endl;
-        rootNode->right = splitList(midNode->next);
+        beforeMidNode = getBeforeMidPoint(node);
+        rootNode = new TreeNode(beforeMidNode->next->val);
+
+        rootNode->right = splitList(beforeMidNode->next->next);
         // disconnect the list from the middle
-        cout << "setting left child" << endl;
-        midNode->next = NULL;
+        beforeMidNode->next = NULL;
         rootNode->left = splitList(node);
 
         return rootNode;
@@ -86,12 +90,21 @@ ListNode* createList(vector<int> v) {
     return nodeStart;
 }
 
+void printInOrder(TreeNode* root) {
+    if (root == NULL) { return; }
+    printInOrder(root->left);
+    cout << root->val << endl;
+    printInOrder(root->right);
+}
+
 
 int main() {
 
     Solution sol;
     ListNode* list = createList({1, 3, 5, 8, 9, 10, 12, 18});
-    sol.sortedListToBST(list);
+    TreeNode* root = sol.sortedListToBST(list);
+
+    printInOrder(root);
 
     return 0;
 }
