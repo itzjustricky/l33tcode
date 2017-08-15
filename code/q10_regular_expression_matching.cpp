@@ -10,9 +10,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <set>
 #include <stack>
 #include <tuple>
-#include <unordered_map>
+#include <utility>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ private:
     stack<tuple<int, int>> m_ExploreStack;
     // make use of this
     // maps out where pair (charPtr, exprPtr) have failed
-    // unordered_map<int, int> m_FailedMatches;
+    // set<pair<int, int>> m_FailedMatches;
 
     void clearExploreStack() {
         while (!m_ExploreStack.empty()) {
@@ -31,7 +32,10 @@ private:
         }
     }
 
-    // unordered_map<string, int>
+    // bool hasFailed(int charPtr, int exprPtr) {
+    //     if (pa)
+    // }
+
     vector<string> parseRegexPattern(string p) {
         vector<string> subExpressions;
         string tmpString;
@@ -99,8 +103,13 @@ public:
 
             if (isStarPattern(subExpr)) {
                 // add non-deterministic path to stack
+                cout << subExpr << " is a start pattern" << endl;
                 if (patternMatches(subExpr[0], c)) {
                     m_ExploreStack.emplace(charPtr+1, exprPtr);
+                    ++charPtr; ++exprPtr;
+                } else {    // char for star pattern does not match
+                    // must skip star pattern
+                    ++exprPtr;
                 }
             } else {
                 if (patternMatches(subExpr[0], c)) {
@@ -114,7 +123,8 @@ public:
                     }
                 }
             }
-        }
+
+        }   // end of while loop
     }
 };
 
@@ -122,7 +132,7 @@ public:
 int main() {
 
     string s = "aa";
-    string p = "a";
+    string p = ".*";
 
     Solution sol;
     if (sol.isMatch(s, p)) {
