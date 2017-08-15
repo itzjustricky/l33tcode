@@ -22,30 +22,36 @@ struct ListNode {
 
 class Solution {
 
-public:
+private:
+    bool canAdvanceFastPtr(ListNode* fastPtr) {
+        return (fastPtr != NULL) && \
+               (fastPtr->next != NULL);
+    }
 
-    ListNode *detectCycle(ListNode *head) {
-        if (head == NULL) { return NULL; }
-
-        ListNode* fastPtr = head;
-        ListNode* slowPtr = head;
-
-        while (fastPtr->next != NULL) {
-            fastPtr = fastPtr->next->next;
-            slowPtr = slowPtr->next;
-            if (slowPtr == fastPtr) { break; }
-            if (fastPtr == NULL) { return NULL; }
-        }
-
-        if (fastPtr->next == NULL) { return NULL; }
-
-        // there is definitely cycle at this point
+    ListNode* findCycleStart(ListNode* head, ListNode* meetPoint) {
         ListNode* newPtr = head;
-        while (newPtr != slowPtr) {
-            slowPtr = slowPtr->next;
+        while (newPtr != meetPoint) {
+            meetPoint = meetPoint->next;
             newPtr = newPtr->next;
         }
         return newPtr;
+
+    }
+
+public:
+
+    ListNode *detectCycle(ListNode *head) {
+        ListNode* fastPtr = head;
+        ListNode* slowPtr = head;
+
+        while (true) {
+            if (!canAdvanceFastPtr(fastPtr)) { return NULL; }
+            fastPtr = fastPtr->next->next;
+            slowPtr = slowPtr->next;
+            if (slowPtr == fastPtr) { break; }
+        }
+        // there is definitely cycle at this point
+        return findCycleStart(head, slowPtr);
     }
 
 };

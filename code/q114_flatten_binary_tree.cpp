@@ -22,7 +22,8 @@ struct TreeNode {
 
 
 class Solution {
-public:
+
+private:
 
     bool isLeaf(TreeNode* root) {
         return ((root->left == NULL) &&
@@ -68,7 +69,6 @@ public:
         }
     }
 
-
     TreeNode* recursiveFlatten(TreeNode* node) {
         if (node == NULL) {
             return node;
@@ -78,6 +78,8 @@ public:
             return rearrange(node);
         }
     }
+
+public:
 
     void flatten(TreeNode* root) {
         recursiveFlatten(root);

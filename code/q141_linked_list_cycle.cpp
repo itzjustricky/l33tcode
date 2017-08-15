@@ -22,6 +22,12 @@ struct ListNode {
 
 class Solution {
 
+private:
+    bool canAdvanceFastPtr(ListNode* fastPtr) {
+        return (fastPtr != NULL) && \
+               (fastPtr->next != NULL);
+    }
+
 public:
     bool hasCycle(ListNode *head) {
         if (head == NULL) { return false; }
@@ -29,11 +35,11 @@ public:
         ListNode* fastPtr = head;
         ListNode* slowPtr = head;
 
-        while (fastPtr->next != NULL) {
+        while (true) {
+            if (!canAdvanceFastPtr(fastPtr)) { break; }
             fastPtr = fastPtr->next->next;
             slowPtr = slowPtr->next;
             if (slowPtr == fastPtr) { return true; }
-            if (fastPtr == NULL) { break; }
         }
 
         return false;

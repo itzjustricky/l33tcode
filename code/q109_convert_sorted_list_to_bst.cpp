@@ -32,16 +32,17 @@ class Solution {
 
 private:
 
+    bool canAdvanceFastPtr(ListNode* fastPtr) {
+        return (fastPtr != NULL) && (fastPtr->next != NULL);
+    }
+
     ListNode* getBeforeMidPoint(ListNode* node) {
         ListNode* slowPtr = node;
         ListNode* fastPtr = node;
 
         while (true) {
             fastPtr = fastPtr->next->next;
-            if ((fastPtr == NULL) ||
-                (fastPtr->next == NULL)) {
-                break;
-            }
+            if (!canAdvanceFastPtr(fastPtr)) { break; }
             slowPtr = slowPtr->next;
         }
 
@@ -93,7 +94,7 @@ ListNode* createList(vector<int> v) {
 void printInOrder(TreeNode* root) {
     if (root == NULL) { return; }
     printInOrder(root->left);
-    cout << root->val << endl;
+    cout << root->val << ' ';
     printInOrder(root->right);
 }
 
@@ -105,6 +106,7 @@ int main() {
     TreeNode* root = sol.sortedListToBST(list);
 
     printInOrder(root);
+    cout << endl;
 
     return 0;
 }
