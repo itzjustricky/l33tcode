@@ -12,7 +12,7 @@
 
 #include <stack>
 #include <tuple>
-#include <unordered_map>
+// #include <unordered_map>
 
 using namespace std;
 
@@ -21,9 +21,7 @@ class Solution {
 private:
 
     stack<tuple<int, int>> m_ExploreStack;
-    // make use of this
-    // maps out where pair (charPtr, exprPtr) have failed
-    // unordered_map<int, int> m_FailedMatches;
+
 
     void clearExploreStack() {
         while (!m_ExploreStack.empty()) {
@@ -31,7 +29,12 @@ private:
         }
     }
 
-    // unordered_map<string, int>
+    tuple<int, int> popExploreStack() {
+        tuple<int, int> tmpPair = m_ExploreStack.top();
+        m_ExploreStack.pop();
+        return tmpPair;
+    }
+
     vector<string> parseRegexPattern(string p) {
         vector<string> subExpressions;
         string tmpString;
@@ -69,60 +72,61 @@ private:
 public:
 
     bool isMatch(string s, string p) {
-        // TODO empty m_ExploreStack and m_FailedMatches here
         clearExploreStack();
 
         vector<string> subExpressions = parseRegexPattern(p);
-
         int n1 = s.size(), n2 = subExpressions.size(),
             charPtr = 0, exprPtr = 0;
 
         string subExpr; char c;
         while (true) {
-            if ((charPtr == n1) && (exprPtr == n2)) {
-                cout << "entered and branch" << endl;
-                return true;
-            } else if ((charPtr == n1) || (exprPtr == n2)) {
-                cout << "entered or branch" << endl;
-                if (m_ExploreStack.empty()) {
-                    return false;
-                } else {
-                    tie(charPtr, exprPtr) = m_ExploreStack.top();
-                    m_ExploreStack.pop();
+            // either only one of char or expr reaches end
+            if ((charPtr == n1) != (exprPtr == n2)) {
+                // TODO: this needs to be thought about ...
+                // to take care of cases like ab, ab.*
+                if ((charPtr == n1) && (exprPtr == n2-1)) {
+                    return isStarPattern(subExpressions[exprPtr]);
                 }
-            }
 
-            subExpr = subExpressions[exprPtr];
+                if (m_ExploreStack.empty()) { return false; }
+                else { tie(charPtr, exprPtr) = popExploreStack(); }
+            }
+            if ((charPtr == n1) && (exprPtr == n2)) {
+                return true;
+            }
             c = s[charPtr];
-            cout << "Sub expression " << subExpr << endl;
-            cout << "Character expression " << c << endl;
+            subExpr = subExpressions[exprPtr];
 
             if (isStarPattern(subExpr)) {
-                // add non-deterministic path to stack
                 if (patternMatches(subExpr[0], c)) {
-                    m_ExploreStack.emplace(charPtr+1, exprPtr);
+                    // add non-deterministic path to stack
+                    if (charPtr < n1) { m_ExploreStack.emplace(charPtr+1, exprPtr); }
+                    // explore continuation of both
+                    ++exprPtr; ++charPtr;
+                } else {
+                    // skip star pattern since character does not match
+                    ++exprPtr;
                 }
             } else {
                 if (patternMatches(subExpr[0], c)) {
                     ++exprPtr; ++charPtr;
                 } else {
-                    if (m_ExploreStack.empty()) {
-                        return false;
-                    } else {
-                        tie(charPtr, exprPtr) = m_ExploreStack.top();
-                        m_ExploreStack.pop();
-                    }
+                    if (m_ExploreStack.empty()) { return false; }
+                    else { tie(charPtr, exprPtr) = popExploreStack(); }
                 }
             }
-        }
+
+        }   // end of while loop
     }
 };
 
 
 int main() {
+    // "bbbba"
+    // ".*a*a"
 
-    string s = "aa";
-    string p = "a";
+    string s = "a";
+    string p = "ab*";
 
     Solution sol;
     if (sol.isMatch(s, p)) {
