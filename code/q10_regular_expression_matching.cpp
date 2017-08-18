@@ -17,6 +17,15 @@
 
 using namespace std;
 
+
+void printVector(const vector<string>& v) {
+    for (auto x : v) {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+
+
 class Solution {
 
 private:
@@ -37,25 +46,25 @@ private:
     }
 
     vector<string> parseRegexPattern(string p) {
-        vector<string> subExpressions;
+        vector<string> subPatterns;
         string tmpString;
 
         int n = p.size();
         for (int i = 0; i < n; ++i) {
             if (p[i] == '*') {
-                if (subExpressions.empty()) {
+                if (subPatterns.empty()) {
                     throw invalid_argument(
                         "Invalid pattern, no letter passed before '*'");
                 } else {
-                    tmpString = subExpressions.back() + '*';
-                    subExpressions.pop_back();
-                    subExpressions.push_back(tmpString);
+                    tmpString = subPatterns.back() + '*';
+                    subPatterns.pop_back();
+                    subPatterns.push_back(tmpString);
                 }
             } else {
-                subExpressions.push_back(string(1, p[i]));
+                subPatterns.push_back(string(1, p[i]));
             }
         }
-        return subExpressions;
+        return collapseStarPatterns(subPatterns);
     }
 
     bool isStarPattern(string expr) {
@@ -70,25 +79,52 @@ private:
         }
     }
 
+    /* Reduce the Regex patterns, delete extraneous star patterns
+     * while maintaining equivalence in recognized languages.
+     */
+    vector<string> collapseStarPatterns(const vector<string>& subPatterns) {
+        int n = subPatterns.size();
+        if (n == 0) { return subPatterns; }
+
+        string prevSubPattern = subPatterns[0], nowSubPattern;
+        vector<string> reducedSubPatterns;
+        reducedSubPatterns.push_back(subPatterns[0]);
+
+        for (int i = 1; i < n; ++i) {
+            nowSubPattern = subPatterns[i];
+            if (isStarPattern(nowSubPattern)) {
+                if (nowSubPattern != prevSubPattern ) {
+                    reducedSubPatterns.push_back(nowSubPattern);
+                }
+            } else {
+                reducedSubPatterns.push_back(nowSubPattern);
+            }
+            prevSubPattern = nowSubPattern;
+        }
+
+        return reducedSubPatterns;
+    }
+
 public:
 
     bool isMatch(string s, string p) {
         clearExploreStack();
 
-        vector<string> subExpressions = parseRegexPattern(p);
-        int n1 = s.size(), n2 = subExpressions.size(),
+        vector<string> subPatterns = parseRegexPattern(p);
+        int n1 = s.size(), n2 = subPatterns.size(),
             charPtr = 0, exprPtr = 0;
 
-        string subExpr; char c;
+        string subP; char c;
         while (true) {
             // either only one of char or expr reaches end
             if ((charPtr == n1) != (exprPtr == n2)) {
-                // TODO: this needs to be thought about ...
-                // to take care of cases like ab, ab.*
-                if ((charPtr == n1) && (exprPtr == n2-1)) {
-                    return isStarPattern(subExpressions[exprPtr]);
+                if (charPtr == n1) {
+                    while (exprPtr != n2) {
+                        if (isStarPattern(subPatterns[exprPtr])) { ++exprPtr; }
+                        else { break; }
+                    }
+                    if ((charPtr == n1) && (exprPtr == n2)) { return true; }
                 }
-
                 if (m_ExploreStack.empty()) { return false; }
                 else { tie(charPtr, exprPtr) = popExploreStack(); }
             }
@@ -96,12 +132,13 @@ public:
                 return true;
             }
             c = s[charPtr];
-            subExpr = subExpressions[exprPtr];
+            subP = subPatterns[exprPtr];
 
-            if (isStarPattern(subExpr)) {
-                if (patternMatches(subExpr[0], c)) {
+            if (isStarPattern(subP)) {
+                if (patternMatches(subP[0], c)) {
                     // add non-deterministic path to stack
-                    if (charPtr < n1) { m_ExploreStack.emplace(charPtr+1, exprPtr); }
+                    if (charPtr < (n1-1)) { m_ExploreStack.emplace(charPtr+1, exprPtr); }
+                    if (exprPtr < (n2-1)) { m_ExploreStack.emplace(charPtr, exprPtr+1); }
                     // explore continuation of both
                     ++exprPtr; ++charPtr;
                 } else {
@@ -109,7 +146,7 @@ public:
                     ++exprPtr;
                 }
             } else {
-                if (patternMatches(subExpr[0], c)) {
+                if (patternMatches(subP[0], c)) {
                     ++exprPtr; ++charPtr;
                 } else {
                     if (m_ExploreStack.empty()) { return false; }
@@ -123,11 +160,14 @@ public:
 
 
 int main() {
-    // "bbbba"
-    // ".*a*a"
+    // Time limit exceeded on this one
+    string s = "aaaaaaaaaaaaab";
+    string p = "a*a*a*a*a*a*a*a*a*a*c";
 
-    string s = "a";
-    string p = "ab*";
+    // string s = "wxyza";
+    // string p = ".*a*a";
+    // string s = "a";
+    // string p = "ab*";
 
     Solution sol;
     if (sol.isMatch(s, p)) {
