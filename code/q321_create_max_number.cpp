@@ -43,7 +43,12 @@ private:
         if (v1.size() == 0) return 1;
         else if (v2.size() == 0) return 0;
         else {
-            while (v1[i1] == v2[i2]) { ++i1; ++i2; }
+
+            while ((i1 < l1) && (i2 < l2) &&
+                    v1[i1] == v2[i2]) {
+                ++i1; ++i2;
+            }
+
             if (i1 == l1) {
                 return 1;
             } else if (i2 == l2) {
