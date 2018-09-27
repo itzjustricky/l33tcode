@@ -33,6 +33,9 @@ private:
     void initState() {
         int alphabetLen = _alphabet.length();
 
+        _valueMap.clear(); _costMap.clear();
+        _leftIndexLists.clear(); _valueLists.clear();
+
         _valueMap.reserve(alphabetLen);
         _costMap.reserve(alphabetLen);
         _leftIndexLists.reserve(alphabetLen);
