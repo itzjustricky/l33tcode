@@ -43,11 +43,12 @@
 
 using namespace std;
 
+template <class T>
+void printVector(const vector<T>& v);
 
 class Solution {
 private:
     int _wordLength = 0;
-    int _numOfWords = 0;
 
     bool isNeighbor(string w1, string w2) {
         int numOfCommonChars = 0;
@@ -57,91 +58,71 @@ private:
         return numOfCommonChars == (_wordLength - 1);
     }
 
-    bool hasTrueValues(vector<bool>& boolMap) {
-        int sum = 0;
-        for (bool x: boolMap) {
-            sum += x;
-        }
-        return sum > 0;
-    }
-
     bool wordInList(string targetWord, vector<string>& wordList) {
         for (string word: wordList) {
-            if (word == targetWord) return true;
+            if (word == targetWord)
+                return true;
         }
         return false;
     }
 
-    // This will manipulate the passed neighborBoolMap
-    // it will populate true values into indices corresponding to a neighbor
+    // This will manipulate the passed neighbors;
+    // it will populate the words into neighbors
     void findNeighbors(
             string targetWord,
-            vector<bool>& neighborBoolMap,
-            vector<string>& wordList,
-            vector<bool>& visitedWords) {
+            vector<string>& neighbors,
+            vector<string>& wordList) {
 
-        for (int i = 0 ; i < _numOfWords; ++i) {
-            // if not visited then check if is neighbor
-            if ((!visitedWords[i]) &&
-                (!neighborBoolMap[i]) &&
-                isNeighbor(targetWord, wordList[i])) {
-                neighborBoolMap[i] = true;
+        vector<int> eraseTargets;
+        for (size_t i = 0; i < wordList.size(); ++i) {
+            if (isNeighbor(targetWord, wordList[i])) {
+                neighbors.push_back(wordList[i]);
+                eraseTargets.push_back(i);
             }
+        }
+        for (vector<int>::reverse_iterator i = eraseTargets.rbegin();
+             i != eraseTargets.rend(); ++i) {
+            wordList.erase(wordList.begin()+*i);
         }
     }
 
     // will return a boolean map of neighbors for the passed target-word
-    vector<bool> findNeighbors(
-            vector<bool>& targetWords,
-            vector<string>& wordList,
-            vector<bool>& visitedWords) {
-        vector<bool> neighborBoolMap(_numOfWords, false);
+    vector<string> findNeighbors(
+            vector<string>& targetWords,
+            vector<string>& wordList) {
+        vector<string> neighbors;
 
-        for (int i = 0; i < _numOfWords; ++i) {
-            if (targetWords[i]) {
-                findNeighbors(
-                    wordList[i], neighborBoolMap,
-                    wordList, visitedWords);
-            }
+        for (string word: targetWords) {
+            findNeighbors(word, neighbors, wordList);
         }
-        return neighborBoolMap;
+
+        return neighbors;
     }
 
 
 public:
     int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-        // set the class member _numOfWords first
         _wordLength = beginWord.size();
-        _numOfWords = wordList.size();
-
-        vector<bool> visitedWords(_numOfWords, false);
-        vector<bool> neighborBoolMap(_numOfWords, false);
-        findNeighbors(beginWord, neighborBoolMap, wordList, visitedWords);
+        vector<string> neighbors;
 
         // first check if endWord is even in the wordList
         if (!wordInList(endWord, wordList)) return 0;
 
+        findNeighbors(beginWord, neighbors, wordList);
+
         int length(1);
-
-        while (hasTrueValues(neighborBoolMap)) {
+        while (!neighbors.empty()) {
             ++length;
-            for (int i = 0; i < _numOfWords; ++i) {
-                if (neighborBoolMap[i]) {
-                    visitedWords[i] = true;
-                    if (endWord == wordList[i])
-                        return length;
-                }
-            }
-
-            neighborBoolMap = findNeighbors(
-                neighborBoolMap, wordList, visitedWords);
+            if (wordInList(endWord, neighbors))
+                return length;
+            neighbors = findNeighbors(neighbors, wordList);
         }
-
         return 0;
     }
 };
 
-void printVector(const vector<string>& v) {
+template <class T>
+void printVector(const vector<T>& v) {
     for (auto x : v) {
         cout << x << " ";
     }
@@ -151,10 +132,17 @@ void printVector(const vector<string>& v) {
 int main() {
     Solution sol = Solution();
 
-    vector<string> wordList1({"hot","dot","dog","lot","log","cog"});
-    cout << "For ('hit' => 'cog') and word list:" << endl;
-    printVector(wordList1);
-    cout << "The ladder length is " << sol.ladderLength("hit", "cog", wordList1) << endl;
+    // vector<string> wordList1({"hot","dot","dog","lot","log","cog"});
+    // cout << "For ('hit' => 'cog') and word list:" << endl;
+    // printVector(wordList1);
+    // cout << "The ladder length is " << sol.ladderLength("hit", "cog", wordList1) << endl;
+
+    vector<string> wordList2({"a","b","c"});
+    cout << "For ('a' => 'c') and word list:" << endl;
+    printVector(wordList2);
+    cout << "The ladder length is "
+         << sol.ladderLength("a", "c", wordList2) << endl;
+
 
     return 0;
 }

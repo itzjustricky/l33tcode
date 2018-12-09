@@ -54,6 +54,10 @@ private:
         for (int i = 0; i < _wordLength; ++i) {
             if (w1[i] == w2[i]) ++numOfCommonChars;
         }
+        if (numOfCommonChars == (_wordLength - 1)) {
+            cout << "words " << w1 << " and " << w2
+                 << " are neighbors " << endl;
+        }
         return numOfCommonChars == (_wordLength - 1);
     }
 
@@ -84,7 +88,7 @@ private:
             // if not visited then check if is neighbor
             if ((!visitedWords[i]) &&
                 (!neighborBoolMap[i]) &&
-                isNeighbor(targetWord, wordList[i])) {
+                (isNeighbor(targetWord, wordList[i]))) {
                 neighborBoolMap[i] = true;
             }
         }
@@ -104,6 +108,20 @@ private:
                     wordList, visitedWords);
             }
         }
+        cout << "//////////////////////////////////////////////////" << endl;
+        cout << "For target words: " << endl;
+        for (int i = 0; i < _numOfWords; ++i) {
+            if (targetWords[i]) cout << wordList[i] << ", ";
+        }
+        cout << endl;
+
+        cout << "Found neighbors: " << endl;
+        for (int i = 0; i < _numOfWords; ++i) {
+            if (neighborBoolMap[i]) cout << wordList[i] << ", ";
+        }
+        cout << endl;
+        cout << "//////////////////////////////////////////////////" << endl;
+
         return neighborBoolMap;
     }
 
@@ -125,11 +143,17 @@ public:
 
         while (hasTrueValues(neighborBoolMap)) {
             ++length;
+            cout << "Entered while loop." << endl;
+
             for (int i = 0; i < _numOfWords; ++i) {
                 if (neighborBoolMap[i]) {
+                    cout << "visiting word " << wordList[i] << endl;
                     visitedWords[i] = true;
-                    if (endWord == wordList[i])
+
+                    if (endWord == wordList[i]) {
+                        cout << "returning the length found" << endl;
                         return length;
+                    }
                 }
             }
 
@@ -137,6 +161,7 @@ public:
                 neighborBoolMap, wordList, visitedWords);
         }
 
+        cout << "no path was found" << endl;
         return 0;
     }
 };
