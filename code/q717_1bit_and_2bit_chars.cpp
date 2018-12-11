@@ -33,15 +33,55 @@
 
 using namespace std;
 
+template <class T>
+void printVector(vector<T> v);
+
+
 class Solution {
 public:
     bool isOneBitCharacter(vector<int>& bits) {
+        int i = 0, n = bits.size();
+        // represent last character used, {1: 1-bit char, 0: 2-bit char}
+        bool prevChar(0);
 
+        while (i < n) {
+            // if starts with 0, must use 1-bit character
+            if (bits[i] == 0) {
+                i += 1; prevChar = 1;
+                // if starts with 1, must use 2-bit character
+            } else {    // i == 1
+                i += 2; prevChar = 0;
+            }
+        }
+        return prevChar;
     }
 };
 
 
+template <class T>
+void printVector(vector<T> v) {
+    for (auto x: v) {
+        cout << x << ' ';
+    }
+    cout << endl;
+}
+
+string convertBool(bool x) {
+    return x ? "true" : "false";
+}
+
+
 int main() {
+
+    Solution sol;
+    vector<int> bits1({1, 0, 0});
+    vector<int> bits2({1, 1, 1, 0});
+
+    cout << "For bits: "; printVector(bits1);
+    cout << "answer is: " << convertBool(sol.isOneBitCharacter(bits1)) << endl;
+
+    cout << "For bits: "; printVector(bits2);
+    cout << "answer is: " << convertBool(sol.isOneBitCharacter(bits2)) << endl;
 
     return 0;
 }
