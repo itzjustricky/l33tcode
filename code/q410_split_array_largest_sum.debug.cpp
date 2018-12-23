@@ -41,16 +41,29 @@ private:
         int numsSize = nums.size(),
             accmTracker = 0, cutsUsed = 0;
 
+        cout << "##################################################" << endl;
+        cout << "validation function for largestSum=" << largestSum << endl;
+
         for (int i = 0; i < numsSize; ++i) {
-            if (nums[i] > largestSum) return false;
+            if (nums[i] > largestSum) {
+                cout << "invalid: found 1 num greater than it" << endl;
+                cout << "##################################################" << endl;
+                return false;
+            }
 
             accmTracker += nums[i];
             if (accmTracker > largestSum) {
                 accmTracker = nums[i];
-                if (++cutsUsed > allowedCuts) return false;
+                if (++cutsUsed > allowedCuts) {
+                    cout << "invalid: used all available cuts" << endl;
+                    cout << "##################################################" << endl;
+                    return false;
+                }
             }
         }
 
+        cout << "valid cut" << endl;
+        cout << "##################################################" << endl;
         return true;
     }
 
@@ -60,12 +73,19 @@ private:
             const vector<int>& nums) {
         int largestSum = (start + end) / 2;
         while ((end - start) > 1) {
-            if (validLargestSum(largestSum, allowedCuts, nums))
+            cout << "validating largestSum " << largestSum << endl;
+
+            if (validLargestSum(largestSum, allowedCuts, nums)) {
+                cout << "largestSum: " << largestSum << " is valid." << endl;
                 end = largestSum;
-            else
+            } else {
+                cout << "largestSum: " << largestSum << " is invalid (too small)." << endl;
                 start = largestSum;
+            }
 
             largestSum = (start + end) / 2;
+            cout << "updated start: " << start << ", end: " << end
+                 << " largestSum: " << largestSum << endl;
         }
         return validLargestSum(start, allowedCuts, nums) ? start : end;
     }
@@ -81,6 +101,9 @@ public:
             maxNum = max(maxNum, nums[i]);
         }
 
+        cout << "calculated maxNum: " << maxNum << endl;
+        cout << "calculated numSum: " << numSum << endl;
+
         if (numsSize == m) return maxNum;
         // sum_of_elems = std::accumulate(vector.begin(), vector.end(), 0);
         return binarySearchMinLargestSum(
@@ -93,9 +116,9 @@ int main() {
 
     Solution sol;
 
-    int m1 = 2;
-    vector<int> nums1({7,2,5,10,8});
-    cout << "The largest sum for test 1 is: " << sol.splitArray(nums1, m1) << endl;
+    // int m1 = 2;
+    // vector<int> nums1({7,2,5,10,8});
+    // cout << "The largest sum for test 1 is: " << sol.splitArray(nums1, m1) << endl;
 
     int m2 = 5;
     vector<int> nums2({2,3,1,2,4,3});
