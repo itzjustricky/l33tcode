@@ -1,6 +1,7 @@
 /*
  *
-    Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.
+    Given a sorted array and a target value, return the index if the target is found.
+    If not, return the index where it would be if it were inserted in order.
 
     You may assume no duplicates in the array.
 
@@ -29,50 +30,33 @@ using namespace std;
 
 
 class Solution {
+
 public:
     int searchInsert(vector<int>& nums, int target) {
 
-        // adjusted binary search
-        int l_bound = 0, u_bound = nums.size()-1;
+        int a = 0, b = nums.size()-1,
+            i = 0;
+        while ((b - a) > 1) {
+            i = (a + b) / 2;
+            if (target > nums[i]) a = i;
+            else b = i;
+        }
 
-        int pos(0);
-        do {
-            pos = (l_bound + u_bound) / 2;
-            if (nums[pos] > target)
-                u_bound = pos;
-            else
-                l_bound = pos;
-
-        } while (l_bound < u_bound);
-
-        return pos;
+        if (target <= nums[a]) return a;
+        else if (target <= nums[b]) return b;
+        else return b+1;
     }
 };
 
-int main() {
 
+int main() {
     Solution sol;
 
-    // Example 1:
-    // Expected Output: 2
-    vector<int> nums1({1,3,5,6});
-    cout << "Example 1 answer: " << sol.searchInsert(nums1, 5) << endl;
-
-    // Example 2:
-    // Expected Output: 1
-    vector<int> nums2({1,3,5,6});
-    cout << "Example 2 answer: " << sol.searchInsert(nums2, 2) << endl;
-
-    // Example 3:
-    // Expected Output: 4
-    vector<int> nums3({1,3,5,6});
-    cout << "Example 3 answer: " << sol.searchInsert(nums3, 7) << endl;
-
-    // Example 4:
-    // Expected Output: 0
-    vector<int> nums4({1,3,5,6});
-    cout << "Example 4 answer: " << sol.searchInsert(nums4, 0) << endl;
-
+    vector<int> v({1,3,5,6});
+    cout << "1st Solution: " << sol.searchInsert(v, 5) << endl;
+    cout << "2nd Solution: " << sol.searchInsert(v, 2) << endl;
+    cout << "3rd Solution: " << sol.searchInsert(v, 7) << endl;
+    cout << "4th Solution: " << sol.searchInsert(v, 0) << endl;
 
     return 0;
 }
