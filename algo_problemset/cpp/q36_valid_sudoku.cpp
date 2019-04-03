@@ -9,6 +9,7 @@
 */
 
 #include <vector>
+#include <cstdlib>
 #include <utility>
 #include <iostream>
 
@@ -29,33 +30,69 @@ private:
     }
 
     int getBoxIndex(int i, int j) {
-        return i + j / 3;
+        return (i/3) * 3 + (j/3);
     }
 
-    bool tryUpdate(vector<vector<bool>>& x) {
+    /* Will update the vector that keeps track of the numbers used
+     *
+     * :returns: false if update is not 'successful', true otherwise
+     */
+    bool tryUpdate(vector<vector<bool>>& x, int index, int numIndex) {
+        if (x[index][numIndex])
+            return false;
+        else
+            x[index][numIndex] = true;
+        return true;
+    }
 
+    void resetCacheVector(vector<vector<bool>>& x) {
+        for (auto &a : x)
+            fill(a.begin(), a.end(), false);
     }
 
 public:
-    Solution() : _rows(9, vector<bool>(9, false)),
-                 _cols(9, vector<bool>(9, false)),
-                 _subBox(9, vector<bool>(9, false)) {}
+
+    // make the storage vectors larger so the index does not
+    // have to be adjusted (because of lack of '0' in sudoku)
+    Solution() : _rows(9, vector<bool>(10, false)),
+                 _cols(9, vector<bool>(10, false)),
+                 _subBox(9, vector<bool>(10, false)) {}
 
     bool isValidSudoku(vector<vector<char>>& board) {
+        resetCacheVector(_rows);
+        resetCacheVector(_cols);
+        resetCacheVector(_subBox);
 
-        for (int i = 0; i < 9; ++i) {
-            for (int j = 0; j < 9; ++j) {
+        int boardValue = 0;
+        for (int rowInd = 0; rowInd < 9; ++rowInd)
+        for (int colInd = 0; colInd < 9; ++colInd)
+            if (board[rowInd][colInd] != '.') {
 
+                boardValue = static_cast<int>(board[rowInd][colInd] - '0');
+                if (
+                    (!tryUpdate(_rows, rowInd, boardValue)) ||
+                    (!tryUpdate(_cols, colInd, boardValue)) ||
+                    (!tryUpdate(
+                        _subBox, getBoxIndex(rowInd, colInd), boardValue))) {
+
+                    return false;
+                }
             }
-        }
 
+        return true;
     }
 };
+
+
+string convertBool(bool x) {
+    return x ? "True" : "False";
+}
 
 
 int main() {
     Solution sol;
 
+    // expected true
     vector<vector<char>> board1({
         {'5','3','.','.','7','.','.','.','.'},
         {'6','.','.','1','9','5','.','.','.'},
@@ -67,6 +104,7 @@ int main() {
         {'.','.','.','4','1','9','.','.','5'},
         {'.','.','.','.','8','.','.','7','9'}
     });
+    // expected false
     vector<vector<char>> board2({
       {'8','3','.','.','7','.','.','.','.'},
       {'6','.','.','1','9','5','.','.','.'},
@@ -79,8 +117,8 @@ int main() {
       {'.','.','.','.','8','.','.','7','9'}
     });
 
-    cout << "board1: " << sol.isValidSudoku(board1) << endl;
-    cout << "board2: " << sol.isValidSudoku(board2) << endl;
+    cout << "board1: " << convertBool(sol.isValidSudoku(board1)) << endl;
+    cout << "board2: " << convertBool(sol.isValidSudoku(board2)) << endl;
 
     return 0;
 }
