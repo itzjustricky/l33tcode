@@ -41,12 +41,16 @@
  */
 
 
-#include <stack>
+// #include <stack>
+#include <deque>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
+
+template <typename T>
+void print2DVector(const vector<vector<T>>& X);
 
 
 struct less_than_key {
@@ -61,14 +65,13 @@ class Solution {
 
 private:
     // Remove clips from the stack that are not needed after newClip is added.
-    void cleanStack(stack<vector<int>&> clipStack, const vector<int>& newClip) {
-        // vector
-        int tail = 0;
-        while (!clipStack.empty()) {
-            tail = clipStack.top()[1];
+    void cleanStack(deque<vector<int>>& clipDeque, const vector<int>& newClip) {
+        auto it1 = clipDeque.rbegin(); auto it2 = it1 + 1;
 
+        while ((it2 != clipDeque.rend()) && ((*it2)[1] >= newClip[0])) {
+            ++it1; ++it2;
+            clipDeque.pop_back();
         }
-
     }
 
 public:
@@ -80,19 +83,52 @@ public:
         sort(clips.begin(), clips.end(), less_than_key());
         if (clips[0][0] != 0) return -1;
 
-        int currTail = 0;
-        stack<vector<int>&> clipStack;
-        for (auto it = ++clips.begin(); it != clips.end(); ++it) {
-            currTail = clipStack.top()[1];
-            // if current tail cannot reach the beginning of current clip then task is impossible
-            if (currTail < *it[0]) return -1;
+        deque<vector<int>> clipDeque;
 
-            if (*it[1] >= currTail) {
-                cleanStack(clipStack, *it);
-                clipStack.push(*it);
+        // get longest clip starting at 0
+        int i = 0;
+        while (clips[i][0] == 0) ++i;
+        clipDeque.push_back(clips[i-1]);
+        if (clipDeque.back()[1] >= T) return clipDeque.size();
+
+        int currTail = 0;
+        for (auto it = clips.begin() + i; it != clips.end(); ++it) {
+            currTail = clipDeque.back()[1];
+            // if current tail cannot reach the beginning of current clip then task is impossible
+            if (currTail < (*it)[0]) return -1;
+
+            if ((*it)[1] >= currTail) {
+                cleanStack(clipDeque, *it);
+                clipDeque.push_back(*it);
+
+                if (clipDeque.back()[1] >= T) return clipDeque.size();
             }
         }
 
-        return (clipStack.top()[1] >= T) ? clipStack.size() : -1;
+        return (clipDeque.back()[1] >= T) ? clipDeque.size() : -1;
     }
 };
+
+
+template <typename T>
+void print2DVector(const vector<vector<T>>& X) {
+    for (auto row : X) {
+        for (auto x : row) cout << x << ' ';
+        cout << endl;
+    }
+}
+
+
+int main() {
+    Solution sol;
+    vector<vector<int>> clips1 = {
+        {0,2}, {4,6}, {8,10},
+        {1,9}, {1,5}, {5,9}};
+    cout << "The output for Example 1: " << sol.videoStitching(clips1, 10) << endl;
+
+    vector<vector<int>> clips2 = \
+        {{5,7},{1,8},{0,0},{2,3},{4,5},{0,6},{5,10},{7,10}};
+    cout << "The output for Example 2: " << sol.videoStitching(clips2, 5) << endl;
+
+    return 0;
+}
