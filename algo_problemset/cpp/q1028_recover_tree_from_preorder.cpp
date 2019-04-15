@@ -41,10 +41,8 @@ private:
         if (startIndex >= N) return -1;
 
         for (int i = startIndex; i < N; ++i) {
-            if (S[i] == '-') {
-                cout << "extracted value length " << i - startIndex << " start: " << startIndex << endl;
+            if (S[i] == '-')
                 return i - startIndex;
-            }
         }
         return N - startIndex;
     }
@@ -54,23 +52,16 @@ private:
         if (startIndex >= N) return -1;
 
         for (int i = startIndex; i < N; ++i) {
-            if (S[i] != '-') {
-                cout << "extracted value length " << i - startIndex << " start: " << startIndex << endl;
+            if (S[i] != '-')
                 return i - startIndex;
-            }
         }
         return N - startIndex;
     }
 
     pair<TreeNode*, int> createTree(string S, int startIndex, int currDepth) {
-        cout << "#########################################################" << endl;
-        cout << "### depth: " << currDepth << " ###" << endl;
         int valueLength = extractValueLength(S, startIndex);
         int val = stoi(S.substr(startIndex, valueLength));
         int distMoved = 0, tmpDist = 0;
-
-        cout << "creating tree with root: " << val << " start: " << startIndex
-             << " depth: " << currDepth << endl;
 
         int depth = 0;
         TreeNode* root = new TreeNode(val);
@@ -83,7 +74,6 @@ private:
             tie(root->left, tmpDist) = \
                 createTree(S, startIndex + distMoved, depth);
             distMoved += tmpDist;
-            cout << "distance moved by left subtree " << distMoved << endl;
 
             // see if there is a right child to populate
             depth = extractDepth(S, startIndex + distMoved);
@@ -94,8 +84,6 @@ private:
                 distMoved += tmpDist;
             }
         }
-        cout << "### depth: " << currDepth << " ###" << endl;
-        cout << "#########################################################" << endl;
         return make_pair(root, distMoved);
     }
 
