@@ -31,7 +31,7 @@
 class Solution:
 
     def gen_next_say_string(self, say_string: str):
-        def _gen_parts(say_string):
+        def _gen_parts(say_string: str):
             cnt = 1
             prev_c = say_string[0]
             for c in say_string[1:]:
