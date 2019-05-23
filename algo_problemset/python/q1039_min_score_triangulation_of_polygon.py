@@ -39,61 +39,45 @@
 """
 
 import math
-import operator
-import functools
 
 from typing import List
-# from typing import Tuple
-
-
-def wrap_iter(A: List[int], start: int, end: int) -> List[int]:
-    if start > end:
-        return A[start:] + A[:(end+1)]
-    else:
-        return A[start:(end+1)]
-
-
-def calc_range_length(A: List[int], start: int, end: int) -> int:
-    a_length = len(A)
-    if start > end:
-        return (a_length-start) + end + 1
-    else:
-        return end - start + 1
-
-
-def iter_triangles(start: int, end: int):
-
-    def wrap_range(wrap_start: int, wrap_end: int):
-        for x in range(wrap_start, end+1):
-            yield x
-        for x in range(start, wrap_end+1):
-            yield x
-
-    range_list = list(range(start, end+1))
-    for (i, j) in zip(range_list[:-1], range_list[1:]):
-        for k in wrap_range(j+1, i-2):
-            yield (i, j, k)
 
 
 class Solution:
 
-    def recursive_triangulation(self, A: List[int], start: int, end: int):
+    def triangle_cost(self, A: List[int], i: int, j: int, k: int):
+        return A[i] * A[j] * A[k]
+
+    def rec_triangulation(self, A: List[int], start: int, end: int):
 
         if (start, end) in self.min_score_hash:
             return self.min_score_hash[(start, end)]
 
-        # a_range = len(A)
-        range_length = calc_range_length(A, start, end)
+        if (end - start) == 2:
+            self.min_score_hash[(start, end)] = \
+                self.triangle_cost(A, start, start+1, end)
+            return self.min_score_hash[(start, end)]
+        elif (end - start) < 2:
+            self.min_score_hash[(start, end)] = 0
+            return 0
 
-        if range_length < 3:
-            return math.inf
-        elif range_length == 3:
-            self.min_score_hash[(start, end)] = functools.reduce(
-                operator.mul, wrap_iter(A, start, end), 1)
-        else:
-            pass
+        min_cost = math.inf
+        for k in range(start+1, end):
+            min_cost = min(
+                min_cost,
+                self.rec_triangulation(A, start, k) +
+                self.rec_triangulation(A, k, end) +
+                self.triangle_cost(A, start, end, k))
+
+        self.min_score_hash[(start, end)] = min_cost
+        return min_cost
 
     def minScoreTriangulation(self, A: List[int]) -> int:
-
         self.min_score_hash = dict()
-        pass
+        return self.rec_triangulation(A, 0, len(A)-1)
+
+if __name__ == "__main__":
+
+    sol = Solution()
+    min_score = sol.minScoreTriangulation([1,3,1,4,1,5])    # noqa [E231]
+    print(min_score)
