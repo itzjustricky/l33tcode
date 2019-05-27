@@ -156,8 +156,8 @@ if __name__ == "__main__":
 
     sol = Solution()
 
-    # print("Found median: {}"
-    #       .format(sol.findMedianSortedArrays([1,3,5,8,9], [2])))    # noqa [E231]
+    print("Found median: {}"
+          .format(sol.findMedianSortedArrays([1,3,5,8,9], [2])))    # noqa [E231]
 
     print("Found median: {}"
           .format(sol.findMedianSortedArrays([1,2,3], [4,5,6])))    # noqa [E231]
