@@ -6,6 +6,7 @@ Medium
 
 from typing import List
 from typing import Tuple
+from typing import Union
 
 
 class Solution:
@@ -35,7 +36,7 @@ class Solution:
     def recursiveFindSum(
             self,
             target: int, bounds: Tuple[int, int], nums: List[int],
-            N: int, numbers_used: List[int]):
+            N: int, numbers_used: List[int]) -> Union[None, List[List[int]]]:
 
         lbnd, rbnd = bounds
         if ((rbnd - lbnd) < N-1):
