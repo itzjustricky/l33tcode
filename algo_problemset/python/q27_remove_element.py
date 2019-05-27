@@ -1,6 +1,6 @@
 """
-
 27. Remove Element
+Easy
 """
 
 from typing import List
