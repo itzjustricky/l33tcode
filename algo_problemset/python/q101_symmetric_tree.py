@@ -24,6 +24,9 @@ class Solution:
 
     def isSymmetric(self, root: TreeNode) -> bool:
 
+        if root is None:
+            return True
+
         left_queue = [root.left]
         right_queue = [root.right]
 

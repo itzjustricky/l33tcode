@@ -24,3 +24,4 @@ class Solution:
 
     def invertTree(self, root: TreeNode) -> TreeNode:
         self.recursiveInvert(root)
+        return root
