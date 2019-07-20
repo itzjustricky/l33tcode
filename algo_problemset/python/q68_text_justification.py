@@ -13,24 +13,24 @@ class Solution:
             self, line_length: int, n_words: int, maxWidth: int) -> List[int]:
         """ Function to distribute spaces among the words """
         if n_words == 1:
-            return [maxWidth - line_length]
+            yield maxWidth - line_length
 
         space_left = maxWidth - line_length
         per_word = space_left // (n_words - 1)
         extra_space = space_left - (per_word * (n_words-1))
 
-        spaces = [
-            per_word + (ind <= extra_space)
-            for ind in range(1, n_words)]
-        return spaces + [0]
+        for ind in range(1, n_words):
+            yield per_word + (ind <= extra_space)
+        yield 0
 
     def distributeSpacesForLastLine(
             self, line_length: int, n_words: int, maxWidth: int) -> List[int]:
         """ Function to distribute spaces among the words """
         space_left = maxWidth - line_length
-        spaces = [1 for i in range(1, n_words)] + \
-                 [space_left - (n_words-1)]
-        return spaces
+        for i in range(1, n_words):
+            yield 1
+
+        yield space_left - (n_words-1)
 
     def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
         text_justified_words = list()
@@ -64,8 +64,8 @@ class Solution:
 
                 text_justified_words.append(
                     ''.join(
-                        words[j] + (' ' * spaces[i])
-                        for i, j in enumerate(range(word_start, word_end))))
+                        words[i] + (' ' * space_amt)
+                        for i, space_amt in zip(range(word_start, word_end), spaces)))
 
                 word_start = word_end
                 word_end = word_start + 1
@@ -78,8 +78,8 @@ class Solution:
                 line_length, n_words, maxWidth)
             text_justified_words.append(
                 ''.join(
-                    words[j] + (' ' * spaces[i])
-                    for i, j in enumerate(range(word_start, word_end))))
+                    words[i] + (' ' * space_amt)
+                    for i, space_amt in zip(range(word_start, word_end), spaces)))
 
         return text_justified_words
 
@@ -96,8 +96,7 @@ if __name__ == "__main__":
         "example  of text",
         "justification.  "
     ]
-    answer = sol.fullJustify(words, maxWidth)
-    assert answer == expected
+    assert sol.fullJustify(words, maxWidth) == expected
 
     # Example 2:
     words = ["What", "must", "be", "acknowledgment", "shall", "be"]
