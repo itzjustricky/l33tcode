@@ -5,7 +5,6 @@ Medium
 """
 
 from typing import List
-from typing import TypeVars
 
 
 class Solution:
@@ -23,7 +22,7 @@ class Solution:
                 # if this is the scenario it can be on either side
                 if (nums[mid] == nums[rbound]):
                     return self.binarySearch(nums, target, lbound, mid-1) or \
-                           self.binarySearch(nums, target, mid+1, rbound)
+                        self.binarySearch(nums, target, mid+1, rbound)
                 if (nums[mid] > nums[rbound]) and (target <= nums[rbound]):
                     lbound = mid
                 else:
@@ -31,7 +30,7 @@ class Solution:
             else:   # target > nums[mid]
                 if (nums[mid] == nums[lbound]):
                     return self.binarySearch(nums, target, lbound, mid-1) or \
-                           self.binarySearch(nums, target, mid+1, rbound)
+                        self.binarySearch(nums, target, mid+1, rbound)
                 if (nums[mid] < nums[lbound]) and (target >= nums[lbound]):
                     rbound = mid
                 else:
