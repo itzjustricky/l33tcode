@@ -32,7 +32,7 @@ private:
 public:
     bool isValidBST(TreeNode* root) {
         return recursiveIsValidBST(
-            root, numeric_limits<long>::max(), numeric_limits<int>::min());
+            root, numeric_limits<long>::max(), numeric_limits<long>::min());
     }
 };
 
