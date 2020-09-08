@@ -23,13 +23,13 @@ class Solution:
 
             prevEq0, prevEq1, prevEq2 = bitsMod3Eq0, bitsMod3Eq1, bitsMod3Eq2
 
-            bitsMod3Eq0 |= (prevEq0 & num)  # flip out bits appearing mod 3 == 1 times
+            bitsMod3Eq0 ^= (prevEq0 & num)  # flip out bits appearing mod 3 == 1 times
             bitsMod3Eq0 ^= (prevEq2 & num)  # flip in bits appearing mod 3 == 0 times
 
-            bitsMod3Eq1 |= (prevEq1 & num)  # flip out bits
+            bitsMod3Eq1 ^= (prevEq1 & num)  # flip out bits
             bitsMod3Eq1 ^= (prevEq0 & num)  # flip in bits
 
-            bitsMod3Eq2 |= (prevEq2 & num)  # flip out bits
+            bitsMod3Eq2 ^= (prevEq2 & num)  # flip out bits
             bitsMod3Eq2 ^= (prevEq1 & num)  # flip in bits
 
         return bitsMod3Eq1 * (-1 if negativeCntMod3 == 1 else 1)
