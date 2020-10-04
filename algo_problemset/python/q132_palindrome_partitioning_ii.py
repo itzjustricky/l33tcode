@@ -7,6 +7,8 @@ class Solution:
     def minCut(self, s: str) -> int:
         self.cache = dict()
 
+        # for each (i, j) entry in the matrix stores if the
+        # substring s[i:j] is a palindrome
         self.palindromeCache = self.createPalindromeCacheMatrix(s)
         return self.recursiveMinCut(0, s)
 
