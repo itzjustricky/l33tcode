@@ -33,7 +33,7 @@ class Solution:
             # determine loss for merging two transactions
             mergeInd, mergeProfitLoss = None, math.inf
             for ind, (t1, t2) in enumerate(zip(transactions[:-1], transactions[1:])):
-                loss = t1[1] - t2[0]
+                loss = prices[t1[1]] - prices[t2[0]]
                 if loss < mergeProfitLoss:
                     mergeInd, mergeProfitLoss = ind, loss
 
